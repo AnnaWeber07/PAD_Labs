@@ -19,6 +19,10 @@ The Distributed Data Management System for Climate Control Devices is a sophisti
 
 ## Define Service Boundaries: TBA
 
+## Diagram:
+
+![mermaid-diagram-2023-09-20-175630](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/30020359-de18-44fb-9cae-51d31540b36c)
+
 ## Tech Stack & Communication Patterns: TBA
 
 ## Data Management Design: TBA
