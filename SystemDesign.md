@@ -19,6 +19,8 @@ The Distributed Data Management System for Climate Control Devices is a sophisti
 
 ## Define Service Boundaries:
 
+Here are defined service boundaries as well as the boundaries for shared components.
+
 **Climate Control Services (CCS)**:
 
 - **Functionality and Responsibilities:**
@@ -47,9 +49,23 @@ The Distributed Data Management System for Climate Control Devices is a sophisti
     - Utilizes caching for optimizing data retrieval.
     - Implements unit testing for sensor health-related functionalities.
 
-
 **Shared Components:**
 
+**Gateway Service:**
+
+- **Responsibility:** The Gateway Service acts as a reverse proxy and load balancer, receiving incoming requests from external systems and directing them to the appropriate microservice (Climate Control Service or Sensor Health Service) based on routing rules. It handles load balancing to distribute requests evenly among microservice instances.
+
+**Service Discovery:**
+
+- **Responsibility:** The Service Discovery component maintains a registry of microservice instances and their network locations. It enables dynamic service discovery for the Gateway Service to route requests to the correct microservice instances. It provides registration and discovery mechanisms for microservices.
+
+**Monitoring and Alerting System:**
+
+- **Responsibility:** The Monitoring and Alerting System is responsible for collecting performance metrics, logs, and telemetry data from both the Climate Control Service and Sensor Health Service. It generates alerts based on predefined criteria and provides insights into the health and performance of the entire system.
+
+**Unit Testing Frameworks**:
+
+Responsibility: Unit Testing Frameworks are used for testing the individual microservices. They facilitate automated testing of code components within the Climate Control Service (using xUnit in C#) and the Sensor Health Service (using PyTest in Python). These frameworks ensure the reliability and correctness of microservice functionalities.
 
 ## Diagram:
 
