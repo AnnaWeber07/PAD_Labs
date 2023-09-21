@@ -105,6 +105,143 @@ Responsibility: Unit Testing Frameworks are used for testing the individual micr
 
 Here's a short overview of data management and endpoints that are to be implemented:
 
+**Climate Control Service (CCS) Endpoints:**
+
+1. **Update Climate Data**
+    - URL: `/api/climate/update`
+    - Method: `POST`
+    - Request JSON:
+        
+        ```json
+        {
+          "timestamp": "2023-09-15T10:30:00",
+          "temperature": 25.5,
+          "humidity": 60.2
+        }
+        
+        ```
+        
+    - Description: Updates climate data with timestamp, temperature, and humidity readings.
+2. **Get Climate Status**
+    - URL: `/api/climate/status`
+    - Method: `GET`
+    - Response JSON:
+        
+        ```json
+        {
+          "timestamp": "2023-09-15T10:30:00",
+          "temperature": 25.5,
+          "humidity": 60.2,
+          "status": "Normal"
+        }
+        
+        ```
+        
+    - Description: Retrieves the current climate status with timestamp, temperature, humidity, and status information.
+3. **Get Historical Climate Data**
+    - URL: `/api/climate/history`
+    - Method: `GET`
+    - Query Parameters:
+        - `start_date` (e.g., "2023-09-01")
+        - `end_date` (e.g., "2023-09-15")
+    - Response JSON:
+        
+        ```json
+        [
+          {
+            "timestamp": "2023-09-10T14:00:00",
+            "temperature": 26.0,
+            "humidity": 59.8
+          },
+          {
+            "timestamp": "2023-09-11T15:00:00",
+            "temperature": 25.8,
+            "humidity": 60.0
+          }
+        ]
+        
+        ```
+        
+    - Description: Retrieves historical climate data within a specified date range.
+4. **Get Climate Alerts**
+    - URL: `/api/climate/alerts`
+    - Method: `GET`
+    - Response JSON:
+        
+        ```json
+        [
+          {
+            "timestamp": "2023-09-15T12:30:00",
+            "message": "High temperature alert"
+          },
+          {
+            "timestamp": "2023-09-16T08:45:00",
+            "message": "Humidity level too low"
+          }
+        ]
+        
+        ```
+        
+    - Description: Retrieves climate-related alerts with timestamp and alert messages.
+
+**Sensor Health Service (SHS) Endpoints:**
+
+1. **Update Sensor Data**
+    - URL: `/api/sensors/update`
+    - Method: `POST`
+    - Request JSON:
+        
+        ```json
+        {
+          "sensor_id": "12345",
+          "timestamp": "2023-09-15T10:30:00",
+          "status": "Operational",
+          "battery_level": 85
+        }
+        
+        ```
+        
+    - Description: Updates sensor health data with sensor ID, timestamp, status, and battery level.
+2. **Get Sensor Status**
+    - URL: `/api/sensors/status`
+    - Method: `GET`
+    - Response JSON:
+        
+        ```json
+        {
+          "sensor_id": "12345",
+          "timestamp": "2023-09-15T10:30:00",
+          "status": "Operational",
+          "battery_level": 85
+        }
+        
+        ```
+        
+    - Description: Retrieves the current status of a sensor with sensor ID, timestamp, status, and battery level.
+3. **Get Sensor Alerts**
+    - URL: `/api/sensors/alerts`
+    - Method: `GET`
+    - Response JSON:
+        
+        ```json
+        [
+          {
+            "sensor_id": "12345",
+            "timestamp": "2023-09-16T08:45:00",
+            "message": "Low battery alert"
+          },
+          {
+            "sensor_id": "67890",
+            "timestamp": "2023-09-17T14:20:00",
+            "message": "Sensor offline"
+          }
+        ]
+        
+        ```
+        
+    - Description: Retrieves sensor-related alerts with sensor ID, timestamp, and alert messages.
+
+These REST API endpoints provide specific fields for each service, making it clear what data can be sent or retrieved in JSON format. They cover climate control and sensor health operations, including updates, status retrieval, historical data, and alerts.
 
 ## Deployment & Scaling:
 
