@@ -8,9 +8,9 @@ The Distributed Data Management System for Climate Control Devices is a sophisti
 
 ## Todo:
 
-- [ ] System Components & Architecture
-- [ ] Assess Application Suitability
-- [ ] Define Service Boundaries
-- [ ] Choose Tech Stack & Communication Patterns
-- [ ] Design Data Management
-- [ ] Set Up Deployment & Scaling
+- [x] System Components & Architecture
+- [x] Assess Application Suitability
+- [x] Define Service Boundaries
+- [x] Choose Tech Stack & Communication Patterns
+- [x] Design Data Management
+- [x] Set Up Deployment & Scaling
