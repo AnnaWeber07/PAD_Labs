@@ -103,6 +103,31 @@ Responsibility: Unit Testing Frameworks are used for testing the individual micr
 
 ## Data Management Design:
 
+In the provided system architecture diagram:
+
+- The **Climate Control Service (CCS)** and the **Sensor Health Service (SHS)** communicate indirectly through the **Gateway Service**.
+- The communication between CCS and SHS is facilitated by the architecture's components, primarily through the Gateway Service, shared databases, and cache servers.
+
+Here's a description of the data flow between CCS and SHS:
+
+1. **Climate Control Service (CCS):**
+    - CCS is responsible for managing climate control data and functions. It communicates with the Gateway Service for various purposes.
+    - When CCS needs to access or update climate control data, it interacts with its dedicated database, referred to as the **CCS_Database**. This database stores information related to climate control settings, historical data, and other climate-related parameters.
+    - CCS also utilizes a shared cache server, denoted as the **Shared_Cache_Server**, for caching frequently accessed climate control data. This cache server helps improve data retrieval performance.
+2. **Sensor Health Service (SHS):**
+    - SHS focuses on monitoring the health and status of sensors. It communicates with the Gateway Service for its data needs.
+    - When SHS needs to access or update sensor health-related data, it interacts with its dedicated database, referred to as the **SHS_Database**. This database stores information about sensor statuses, battery levels, and alerts.
+    - Similar to CCS, SHS also utilizes the shared cache server, the **Shared_Cache_Server**, to cache sensor health data, enhancing data retrieval efficiency.
+3. **Gateway Service:**
+    - The **Gateway_Service** acts as an intermediary that routes requests and data between external systems, such as Users and External Services, and the internal microservices like CCS and SHS.
+    - It provides load balancing for distributing incoming requests between the Climate Control Service and the Sensor Health Service to ensure efficient resource utilization and high availability.
+    - The Gateway_Service also handles service discovery, allowing external systems and services to locate and communicate with CCS and SHS.
+4. **Monitoring and Alerting System:**
+    - The **Monitoring_and_Alerting_System** is responsible for monitoring the status and health of both CCS and SHS.
+    - It collects monitoring data and alerts from both services. This data includes climate control status and sensor health metrics.
+    - The Monitoring_and_Alerting_System communicates with CCS and SHS for monitoring purposes. It retrieves data about climate control and sensor health through their respective monitoring endpoints.
+    - Additionally, it interacts with both CCS and SHS to collect logs related to their operations, facilitating monitoring and diagnostics.
+
 Here's a short overview of data management and endpoints that are to be implemented:
 
 **Climate Control Service (CCS) Endpoints:**
