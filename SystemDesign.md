@@ -19,22 +19,55 @@ The Distributed Data Management System for Climate Control Devices is a sophisti
 
 ## Define Service Boundaries:
 
-- **Climate Control Service:**
-    - **Functionality:** Manages climate parameters (e.g., temperature, humidity, CO2 levels).
-    - **Responsibilities:** Regulates environmental conditions, ensuring optimal plant growth.
-    - **Technology Stack:** C# (Control Logic), RESTful APIs.
-- **Sensor Health Monitoring:**
-    - **Functionality:** Monitors the health and performance of sensors deployed throughout the facility.
-    - **Responsibilities:** Detects issues in sensors, generates maintenance alerts.
-    - **Technology Stack:** Python (Data Processing), Message Queues (Asynchronous Communication).
-- **Maintenance Scheduler Service:**
-    - **Functionality:** Schedules and logs maintenance tasks for sensors and climate control devices.
-    - **Responsibilities:** Ensures proactive maintenance to prevent disruptions.
-    - **Technology Stack:** C# for Control Logic, ASP.NET Core for RESTful APIs.
-- **Data Visualization Service:**
-    - **Functionality:** Provides a user-friendly interface for monitoring climate conditions and sensor health.
-    - **Responsibilities:** Offers real-time data visualization, historical data analysis, and critical condition alerts.
-    - **Technology Stack:** JavaScript (Interactive Data Visualization).
+**Climate Control Services (CCS)**:
+
+- **Functionality and Responsibilities:**
+    - Manages climate parameters (e.g., temperature, humidity) and their control.
+    - Receives and processes climate data updates from external sources.
+    - Provides real-time status information about the climate conditions.
+    - Offers historical climate data retrieval for analysis and reporting.
+    - Generates alerts in response to critical climate conditions.
+    - Allows configuration of climate control settings, including setpoints.
+    - Implements resource utilization monitoring and provides insights into system performance.
+    - Utilizes caching for optimizing data retrieval.
+    - Implements unit testing for climate control-related functionalities.
+- **Technology Stack:** C# (ASP.NET Core)
+    - **Web Framework:** ASP.NET Core for building RESTful APIs.
+    - **Database Access:** Entity Framework Core for database interactions.
+    - **Caching:** Redis for caching frequently accessed data.
+    - **Testing Framework:** xUnit for unit testing.
+
+**Sensor Health Service (SHS):**
+
+- **Functionality and Responsibilities:**
+    - Monitors the health and status of sensors deployed in the controlled environment.
+    - Receives and processes sensor health data updates.
+    - Provides real-time status information about sensors, including their operational status and health metrics.
+    - Generates alerts in response to sensor-related issues or anomalies.
+    - Allows scheduling and management of sensor maintenance tasks.
+    - Provides sensor configuration options, including calibration parameters.
+    - Offers diagnostics for assessing sensor health and performance.
+    - Enables data export of sensor health information for external analysis.
+    - Supports firmware updates for sensors.
+    - Utilizes caching for optimizing data retrieval.
+    - Implements unit testing for sensor health-related functionalities.
+- **Technology Stack:** Python
+    - **Web Framework:** Flask for building RESTful APIs.
+    - **Database Access:** SQLAlchemy for database interactions.
+    - **Caching:** Redis for caching frequently accessed data.
+    - **Testing Framework:** PyTest for unit testing.
+
+**Shared Components:**
+
+- **Gateway Service:**
+    - **Technology Stack:** C# (ASP.NET Core) or Python (Flask) for the Gateway Service, matching the technology stack of the microservices.
+    - **Load Balancing:** Round-robin load balancing for distributing requests.
+- **Service Discovery:**
+    - **Technology Stack:** C# (ASP.NET Core) or Python (Flask) for the Service Discovery component, matching the technology stack of the microservices.
+- **Monitoring and Alerting System:**
+    - **Technology Stack:** Azure Monitor and Azure Log Analytics for monitoring and alerting. This system is technology-agnostic and can interact with both C# and Python microservices.
+- **Unit Testing Frameworks:**
+    - **Technology Stack:** xUnit for C# (CCS) and PyTest for Python (SHS). Each microservice uses its respective testing framework.
 
 ## Diagram:
 
