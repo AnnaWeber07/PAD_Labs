@@ -59,7 +59,7 @@ namespace CCS.Controllers
                     Status = "Normal"
                 };
 
-                return Ok(status);
+                return Ok("active");
             }
 
             var cancellationTokenSource = new CancellationTokenSource();

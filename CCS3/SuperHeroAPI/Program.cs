@@ -48,4 +48,4 @@ app.UseCors(builder =>
 
 app.MapControllers();
 
-app.Run($"http://localhost:{port}");
+app.Run();

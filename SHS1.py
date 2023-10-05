@@ -20,7 +20,7 @@ CONNECTION_STRING = 'DRIVER={SQL Server};Server=DESKTOP-ENEG12R;Database=SHS;Int
 conn = pyodbc.connect(CONNECTION_STRING)
 
 # Set the timeout for all requests (in seconds)
-REQUEST_TIMEOUT = 0
+REQUEST_TIMEOUT = 1
 
 @app.route('/api/sensors/update', methods=['POST'])
 def update_sensor_data():
