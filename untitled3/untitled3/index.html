@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .service-status {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        .service-data {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .service-data label {
+            font-weight: bold;
+        }
+
+        .send-request-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .send-request-container button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .send-request-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="service-status" id="climateServiceStatus"></div>
+    <div class="service-status" id="sensorServiceStatus"></div>
+    <div class="service-status" id="customServiceStatus"></div>
+    <div>
+        <input type="text" id="customServiceEndpoint" placeholder="Enter custom endpoint">
+        <button onclick="addCustomService()">Add Custom Service</button>
+        <button onclick="removeCustomService()">Remove Selected Service</button>
+    </div>
+    <div>
+        <select id="serviceSelector" onchange="selectService()">
+            <option value="">Select a service</option>
+        </select>
+    </div>
+    <div id="customServices"></div>
+    <div class="send-request-container">
+        <button onclick="sendRequest()">Send Request to Services</button>
+    </div>
+    <div id="serviceResponse"></div>
+</div>
+
+<script>
+    let customServices = JSON.parse(localStorage.getItem('customServices')) || [];
+
+    function addCustomService() {
+        const endpoint = document.getElementById('customServiceEndpoint').value;
+        if (endpoint) {
+            customServices.push({ endpoint, status: null });
+            updateCustomServiceStatus();
+            document.getElementById('customServiceEndpoint').value = '';
+            localStorage.setItem('customServices', JSON.stringify(customServices));
+            populateServiceSelector();
+        }
+    }
+
+    function removeCustomService() {
+        const selectedEndpoint = document.getElementById('serviceSelector').value;
+        if (selectedEndpoint) {
+            customServices = customServices.filter(service => service.endpoint !== selectedEndpoint);
+            updateCustomServiceStatus();
+            localStorage.setItem('customServices', JSON.stringify(customServices));
+            populateServiceSelector();
+        }
+    }
+
+    async function updateCustomServiceStatus() {
+        const customServicesElement = document.getElementById('customServices');
+        customServicesElement.innerHTML = '';
+
+        for (const service of customServices) {
+            const serviceStatusElement = document.createElement('div');
+            const serviceName = service.endpoint.replace(/https?:\/\//, '');
+            serviceStatusElement.classList.add('service-status');
+            serviceStatusElement.id = `${serviceName}ServiceStatus`;
+
+            let newStatus;
+
+            if (service.status !== null) {
+                if (service.status) {
+                    newStatus = `${serviceName} is active`;
+                    serviceStatusElement.classList.add('active');
+                } else {
+                    newStatus = `${serviceName} is not responding`;
+                    serviceStatusElement.classList.add('inactive');
+                }
+            } else {
+                newStatus = `${serviceName} status is unknown`;
+            }
+
+            if (newStatus !== serviceStatusElement.textContent) {
+                serviceStatusElement.textContent = newStatus;
+                customServicesElement.appendChild(serviceStatusElement);
+            }
+
+            try {
+                const response = await axios.get(service.endpoint);
+                if (response.status === 200) {
+                    service.status = true;
+                } else {
+                    service.status = false;
+                }
+                updateCustomServiceStatus();
+            } catch (error) {
+                console.error(`Error fetching status for ${serviceName}:`, error);
+                service.status = false;
+                updateCustomServiceStatus();
+            }
+        }
+
+        localStorage.setItem('customServices', JSON.stringify(customServices));
+    }
+
+
+    function populateServiceSelector() {
+        const serviceSelector = document.getElementById('serviceSelector');
+        serviceSelector.innerHTML = '<option value="">Select a service</option>';
+
+        for (const service of customServices) {
+            const serviceName = service.endpoint.replace(/https?:\/\//, '');
+            const option = document.createElement('option');
+            option.value = service.endpoint;
+            option.textContent = serviceName;
+            serviceSelector.appendChild(option);
+        }
+    }
+
+    function selectService() {
+        const selectedEndpoint = document.getElementById('serviceSelector').value;
+        if (selectedEndpoint) {
+            console.log(`Selected service: ${selectedEndpoint}`);
+        }
+    }
+
+    let climateServiceUrls = [];
+    let sensorServiceUrls = [];
+    let climateIndex = 0;
+    let sensorIndex = 0;
+
+    function getClimateStatusUrl() {
+        let url = climateServiceUrls[climateIndex];
+        climateIndex = (climateIndex + 1) % climateServiceUrls.length;
+        return url;
+    }
+
+    function getSensorStatusUrl() {
+        let url = sensorServiceUrls[sensorIndex];
+        sensorIndex = (sensorIndex + 1) % sensorServiceUrls.length;
+        return url;
+    }
+
+    async function updateStatus(element, url) {
+        try {
+            const response = await axios.get(url);
+            if (response.status === 200) {
+                element.textContent = response.data;
+                element.classList.add('active');
+                element.classList.remove('inactive');
+            } else {
+                element.textContent = 'Service not responding';
+                element.classList.add('inactive');
+                element.classList.remove('active');
+            }
+        } catch (error) {
+            console.error(`Error fetching status:`, error);
+            element.textContent = 'Error fetching status';
+            element.classList.add('inactive');
+            element.classList.remove('active');
+        }
+    }
+
+    setInterval(() => {
+        updateStatus(document.getElementById('climateServiceStatus'), getClimateStatusUrl());
+        updateStatus(document.getElementById('sensorServiceStatus'), getSensorStatusUrl());
+        updateCustomServiceStatus();
+    }, 5000);
+
+    updateCustomServiceStatus();
+    populateServiceSelector();
+
+    async function sendRequest() {
+        try {
+            const climateResponse = await axios.get('https://localhost:7276/api/Climate/status');
+            const sensorResponse = await axios.get('http://localhost:5000/api/sensors/status?sensor_id=1');
+
+            const climateData = climateResponse.data;
+            const sensorData = sensorResponse.data;
+
+            const serviceResponseElement = document.getElementById('serviceResponse');
+            serviceResponseElement.innerHTML = '';
+
+            displayServiceData(serviceResponseElement, 'Climate Service', climateData);
+            displayServiceData(serviceResponseElement, 'Sensor Service', sensorData);
+        } catch (error) {
+            console.error('Error sending request to services:', error);
+            const serviceResponseElement = document.getElementById('serviceResponse');
+            serviceResponseElement.innerHTML = '<div style="color: red;">Error sending request to services</div>';
+        }
+    }
+
+    function displayServiceData(container, serviceName, data) {
+        const serviceDataElement = document.createElement('div');
+        serviceDataElement.classList.add('service-data');
+
+        serviceDataElement.innerHTML = `
+                <label>${serviceName} Data:</label>
+                <div>
+                    Timestamp: ${data.timestamp}<br>
+                    Status: ${data.status}<br>
+                    Battery Level: ${data.battery_level}<br>
+                    Alert Message: ${data.alert_message || 'N/A'}
+                </div>
+            `;
+
+        container.appendChild(serviceDataElement);
+    }
+</script>
+</body>
+
+</html>
