@@ -1,8 +1,8 @@
 import pyodbc
-
 from flask import Flask, request, jsonify, current_app
-from werkzeug.exceptions import RequestTimeout
 from datetime import timedelta
+from redis import Redis
+import random
 
 app = Flask(__name__)
 
@@ -22,6 +22,9 @@ conn = pyodbc.connect(CONNECTION_STRING)
 # Set the timeout for all requests (in seconds)
 REQUEST_TIMEOUT = 1
 
+# Set up Redis for inter-process communication
+redis = Redis()
+
 @app.route('/api/sensors/update', methods=['POST'])
 def update_sensor_data():
     data = request.get_json()
@@ -40,6 +43,9 @@ def update_sensor_data():
 
     conn.commit()
     cursor.close()
+
+    # Broadcast the updated data to other instances
+    redis.publish('sensor_update', jsonify(data))
 
     return jsonify(message='Sensor data updated successfully'), 200
 
@@ -85,4 +91,5 @@ def after_request(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = random.randint(5000, 6000)  # Generate a random port between 5000 and 6000
+    app.run(debug=True, port=port)
