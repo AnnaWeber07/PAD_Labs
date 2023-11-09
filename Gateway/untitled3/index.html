@@ -98,6 +98,8 @@
         <input type="text" id="customServiceEndpoint" placeholder="Enter custom endpoint">
         <button onclick="addCustomService()" id="addCustomServiceBtn">Add Custom Service</button>
         <button onclick="removeCustomService()" id="removeCustomServiceBtn" disabled>Remove Selected Service</button>
+
+
     </div>
     <div>
         <select id="serviceSelector" onchange="selectService()">
@@ -134,6 +136,15 @@
             populateServiceSelector();
         }
     }
+
+    function selectService() {
+        const selectedEndpoint = document.getElementById('serviceSelector').value;
+        if (selectedEndpoint) {
+            console.log(`Selected service: ${selectedEndpoint}`);
+        }
+        document.getElementById('removeCustomServiceBtn').disabled = !selectedEndpoint;
+    }
+
 
     async function updateCustomServiceStatus() {
         const customServicesElement = document.getElementById('customServices');

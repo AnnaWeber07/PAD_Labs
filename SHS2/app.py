@@ -1,8 +1,6 @@
 import pyodbc
-from flask import Flask, request, jsonify, current_app
-from datetime import timedelta
-from redis import Redis
-import random
+from flask import Flask, request, jsonify
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -19,20 +17,17 @@ def add_cors_headers(response):
 CONNECTION_STRING = 'DRIVER={SQL Server};Server=DESKTOP-ENEG12R;Database=SHS;Integrated Security=SSPI;'
 conn = pyodbc.connect(CONNECTION_STRING)
 
-# Set the timeout for all requests (in seconds)
-REQUEST_TIMEOUT = 1
-
-# Set up Redis for inter-process communication
-redis = Redis()
-
 @app.route('/api/sensors/update', methods=['POST'])
 def update_sensor_data():
     data = request.get_json()
     sensor_id = data['sensor_id']
-    timestamp = data['timestamp']
+    timestamp_str = data['timestamp']
     status = data['status']
     battery_level = data['battery_level']
     alert_message = data.get('alert_message')
+
+    # Use dateutil.parser to parse the timestamp string
+    timestamp = datetime.fromisoformat(timestamp_str)
 
     # Insert data into the database
     cursor = conn.cursor()
@@ -43,9 +38,6 @@ def update_sensor_data():
 
     conn.commit()
     cursor.close()
-
-    # Broadcast the updated data to other instances
-    redis.publish('sensor_update', jsonify(data))
 
     return jsonify(message='Sensor data updated successfully'), 200
 
@@ -71,25 +63,9 @@ def get_sensor_status():
     else:
         return jsonify(message='Sensor data not found'), 404
 
-# Status endpoint to check if the service is active
 @app.route('/api/status', methods=['GET'])
 def service_status():
     return jsonify(status='active'), 200
 
-# Register a request timeout handler for all routes
-@app.before_request
-def before_request():
-    # Set the timeout for the current request
-    current_app.config['timeout'] = REQUEST_TIMEOUT
-
-@app.after_request
-def after_request(response):
-    # If the request has timed out, return a 408 Request Timeout response
-    if getattr(request, '_timeout', False):
-        return jsonify(message='Request Timeout'), 408
-
-    return response
-
 if __name__ == '__main__':
-    port = random.randint(5000, 6000)  # Generate a random port between 5000 and 6000
-    app.run(debug=True, port=port)
+    app.run(debug=True, port=5000)  # You can specify a port of your choice here

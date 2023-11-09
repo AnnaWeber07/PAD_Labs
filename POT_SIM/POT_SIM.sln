@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCS", "SuperHeroAPI\CCS.csproj", "{09348E2F-8B7C-4867-9E28-0A3B70146933}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "POT-SIM", "SuperHeroAPI\POT-SIM.csproj", "{09348E2F-8B7C-4867-9E28-0A3B70146933}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

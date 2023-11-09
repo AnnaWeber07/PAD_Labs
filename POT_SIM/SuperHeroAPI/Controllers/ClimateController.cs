@@ -1,127 +1,69 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
-using CCS.Data;
 
-namespace CCS.Controllers
+namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ClimateController : ControllerBase
     {
-        private readonly DataContext _context;
         private readonly IMemoryCache _cache;
-        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(5);
 
-        public ClimateController(DataContext context, IMemoryCache cache)
+        public ClimateController(IMemoryCache cache)
         {
-            _context = context;
             _cache = cache;
         }
 
-        [HttpPost("update")]
-        public async Task<IActionResult> UpdateClimateData([FromBody] ClimateModel climateData)
+        [HttpGet("/climate/status")]
+        public IActionResult GetClimateStatus()
         {
-            try
+            var timestamp = DateTime.UtcNow;
+            var temperature = GenerateRandomDouble(20, 30); // Generate random temperature (between 20 and 30)
+            var humidity = GenerateRandomDouble(50, 70); // Generate random humidity (between 50 and 70)
+
+            var status = new
             {
-                await _semaphoreSlim.WaitAsync();
+                timestamp,
+                temperature,
+                humidity,
+                Status = "Normal"
+            };
 
-                _context.ClimateData.Add(climateData);
-                await _context.SaveChangesAsync();
-
-                // Clear cache after an update
-                _cache.Remove("LatestClimateData");
-
-                return Ok();
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
+            return Ok(status);
         }
 
-        [HttpGet("status")]
-        public async Task<IActionResult> GetClimateStatus()
+        [HttpGet("sensors/status")]
+        public IActionResult GetSensorStatus()
         {
-            if (_cache.TryGetValue("LatestClimateData", out ClimateModel latestClimateData))
+            var sensorId = "12345"; // Simulated sensor ID
+            var timestamp = DateTime.UtcNow;
+            var statusOptions = new[] { "Operational", "Needs Maintenance" }; // Simulated status options
+            var batteryLevel = GenerateRandomInt(70, 100); // Generate random battery level (between 70 and 100)
+
+            var status = new
             {
-                var status = new
-                {
-                    latestClimateData.Timestamp,
-                    latestClimateData.Temperature,
-                    latestClimateData.Humidity,
-                    Status = "Normal"
-                };
+                sensor_id = sensorId,
+                timestamp,
+                status = statusOptions[GenerateRandomInt(0, statusOptions.Length)],
+                battery_level = batteryLevel
+            };
 
-                return Ok("active");
-            }
-
-            var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
-
-            try
-            {
-                await _semaphoreSlim.WaitAsync();
-                latestClimateData = await _context.ClimateData
-                    .OrderByDescending(cd => cd.Timestamp)
-                    .FirstOrDefaultAsync(cancellationTokenSource.Token);
-
-                if (latestClimateData == null)
-                {
-                    return NotFound("Climate data not found.");
-                }
-
-                _cache.Set("LatestClimateData", latestClimateData, TimeSpan.FromMinutes(10));
-
-                var status = new
-                {
-                    latestClimateData.Timestamp,
-                    latestClimateData.Temperature,
-                    latestClimateData.Humidity,
-                    Status = "Normal"
-                };
-
-                return Ok("active");
-            }
-            catch (OperationCanceledException)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Operation timed out.");
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
+            return Ok(status);
         }
 
-        [HttpGet("history")]
-        public async Task<IActionResult> GetHistoricalClimateData([FromQuery] DateTime start_date, [FromQuery] DateTime end_date)
+        private double GenerateRandomDouble(double min, double max)
         {
-            var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+            var random = new Random();
+            return min + (random.NextDouble() * (max - min));
+        }
 
-            try
-            {
-                await _semaphoreSlim.WaitAsync();
-                var historicalData = await _context.ClimateData
-                    .Where(cd => cd.Timestamp >= start_date && cd.Timestamp <= end_date)
-                    .ToListAsync(cancellationTokenSource.Token);
-
-                return Ok(historicalData);
-            }
-            catch (OperationCanceledException)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Operation timed out.");
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
+        private int GenerateRandomInt(int min, int max)
+        {
+            var random = new Random();
+            return random.Next(min, max);
         }
     }
 }

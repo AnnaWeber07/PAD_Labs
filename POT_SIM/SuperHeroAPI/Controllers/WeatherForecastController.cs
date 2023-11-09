@@ -1,7 +1,7 @@
 using CCS;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CCS.Controllers
+namespace Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 
 
-namespace CCS.Data
+namespace Data
 {
     public class DataContext : DbContext
     {
