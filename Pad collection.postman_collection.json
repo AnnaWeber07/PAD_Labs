@@ -35,16 +35,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:7277/api/Climate/sensors/status",
+					"raw": "https://localhost:7277/climate/status",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "7277",
 					"path": [
-						"api",
-						"Climate",
-						"sensors",
+						"climate",
 						"status"
 					]
 				}
@@ -213,7 +211,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/sensors/status",
+					"raw": "http://127.0.0.1:5000/api/sensors/status?sensor_id=12345",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -226,6 +224,12 @@
 						"api",
 						"sensors",
 						"status"
+					],
+					"query": [
+						{
+							"key": "sensor_id",
+							"value": "12345"
+						}
 					]
 				}
 			},
