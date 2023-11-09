@@ -271,6 +271,10 @@ These REST API endpoints provide specific fields for each service, making it cle
 **Architecture Schema**
 ![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/0d6f33df-f2a0-43c3-bda2-5321a2a06b90)
 
+With cache cluster:
+![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/6b45af71-3e67-4345-b1c4-134f6bf49865)
+
+
 To implement the architectural changes for lab 2, I will need to perform the following steps:
 
 1. **Trip Circuit Breaker**:
