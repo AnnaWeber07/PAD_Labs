@@ -269,8 +269,7 @@ Here's a short overview of data management and endpoints that are to be implemen
 These REST API endpoints provide specific fields for each service, making it clear what data can be sent or retrieved in JSON format. They cover climate control and sensor health operations, including updates, status retrieval, historical data, and alerts.
 
 **Architecture Schema**
-![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/686238af-dcc1-4475-a333-c4e0a0e9e8a7)
-
+![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/0d6f33df-f2a0-43c3-bda2-5321a2a06b90)
 
 To implement the architectural changes for lab 2, I will need to perform the following steps:
 
