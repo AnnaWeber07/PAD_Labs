@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "3423a14b-8bc1-4523-a51a-55f487c3a36b",
+		"name": "Pad collection",
+		"description": "SHS python\n\n---\n\n# Sensor Health System (SHS) API Documentation\n\n## Introduction\n\nSensor Health System (SHS) API is a web service designed to manage sensor data in a smart home environment. It provides endpoints for updating sensor data, retrieving the status of sensors, and checking the service status.\n\n## Table of Contents\n\n1. [Installation and Setup](#installation-and-setup)\n    \n2. [Endpoints](#endpoints)\n    \n    - [Update Sensor Data](#update-sensor-data)\n        \n    - [Get Sensor Status](#get-sensor-status)\n        \n    - [Service Status](#service-status)\n        \n3. [Usage Examples](#usage-examples)\n    \n\n---\n\n## 1\\. Installation and Setup\n\nTo use the Smart Home System (SHS) API, follow these steps:\n\n1. Make sure you have Python installed on your system.\n    \n2. pip install Flask pyodbc\n    \n3. Run the Python script provided in your preferred environment.\n    \n\n---\n\n## 2\\. Endpoints\n\n### Update Sensor Data\n\nThis endpoint allows you to update sensor data in the database.\n\n- **URL:** `/api/sensors/update`\n    \n- **Method:** `POST`\n    \n- **Request Body:**\n    \n    - `sensor_id` (string): The unique identifier of the sensor.\n        \n    - `timestamp` (string): The timestamp of the sensor data in ISO 8601 format (e.g., `\"2023-11-09T14:30:00\"`).\n        \n    - `status` (string): The status of the sensor.\n        \n    - `battery_level` (float): The battery level of the sensor.\n        \n    - `alert_message` (string, optional): An optional alert message.\n        \n\n#### Example Request:\n\n``` json\nPOST /api/sensors/update\n{\n    \"sensor_id\": \"sensor001\",\n    \"timestamp\": \"2023-11-09T14:30:00\",\n    \"status\": \"active\",\n    \"battery_level\": 0.8,\n    \"alert_message\": \"Low battery\"\n}\n\n ```\n\n#### Example Response:\n\n``` json\n{\n    \"message\": \"Sensor data updated successfully\"\n}\n\n ```\n\n### Get Sensor Status\n\nThis endpoint allows you to retrieve the latest status of a sensor.\n\n- **URL:** `/api/sensors/status`\n    \n- **Method:** `GET`\n    \n- **Query Parameters:**\n    \n    - `sensor_id` (string): The unique identifier of the sensor.\n        \n\n#### Example Request:\n\n```\nGET /api/sensors/status?sensor_id=sensor001\n\n ```\n\n#### Example Response (Success):\n\n``` json\n{\n    \"sensor_id\": \"sensor001\",\n    \"timestamp\": \"2023-11-09T14:30:00\",\n    \"status\": \"active\",\n    \"battery_level\": 0.8,\n    \"alert_message\": \"Low battery\"\n}\n\n ```\n\n#### Example Response (Sensor Data Not Found):\n\n``` json\n{\n    \"message\": \"Sensor data not found\"\n}\n\n ```\n\n### Service Status\n\nThis endpoint allows you to check if the service is active.\n\n- **URL:** `/api/status`\n    \n- **Method:** `GET`\n    \n\n#### Example Request:\n\n```\nGET /api/status\n\n ```\n\n#### Example Response:\n\n``` json\n{\n    \"status\": \"active\"\n}\n\n ```\n\n---\n\n## 3\\. Usage Examples\n\n### Updating Sensor Data\n\nTo update sensor data, send a `POST` request to `/api/sensors/update` with the required parameters in the request body.\n\n### Getting Sensor Status\n\nTo retrieve the status of a sensor, send a `GET` request to `/api/sensors/status` with the `sensor_id` parameter in the query string.\n\n### Checking Service Status\n\nTo check the service status, send a `GET` request to `/api/status`.\n\n---\n\n---\n\n# Climate Controller API Documentation\n\n## Introduction\n\nThe Climate Controller API is a web service designed to manage climate data in a climate control system. It provides endpoints for updating climate data, retrieving the status of climate conditions, and fetching historical climate data.\n\n## Table of Contents\n\n1. [Installation and Setup](#installation-and-setup)\n    \n2. [Endpoints](#endpoints)\n    \n    - [Update Climate Data](#update-climate-data)\n        \n    - [Get Climate Status](#get-climate-status)\n        \n    - [Get Historical Climate Data](#get-historical-climate-data)\n        \n3. [Usage Examples](#usage-examples)\n    \n\n---\n\n## 1\\. Installation and Setup\n\nStartFragment\n\n1. Ensure that you have a Dockerfile in your project directory. If you don't have one, create a file named `Dockerfile` (no file extension) with the following content:dockerfileCopy code# Use an appropriate base image with ASP.NET Core runtimeFROM mcr.microsoft.com/dotnet/aspnet:5.0 AS baseWORKDIR /appEXPOSE 80# Use an appropriate base image with ASP.NET Core SDKFROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildWORKDIR /srcCOPY \\[\"YourProjectName/YourProjectName.csproj\", \"YourProjectName/\"\\]RUN dotnet restore \"YourProjectName/YourProjectName.csproj\"COPY . .WORKDIR \"/src/YourProjectName\"RUN dotnet build \"YourProjectName.csproj\" -c Release -o /app/buildFROM build AS publishRUN dotnet publish \"YourProjectName.csproj\" -c Release -o /app/publishFROM base AS finalWORKDIR /appCOPY --from=publish /app/publish .ENTRYPOINT \\[\"dotnet\", \"YourProjectName.dll\"\\]Replace `YourProjectName` with the actual name of your project.\n    \n2. Open a terminal and navigate to the directory containing the Dockerfile and your project files. Then, run the following command to build the Docker image:bashCopy codedocker build -t climate-controller-api .This command builds a Docker image named `climate-controller-api`.\n    \n3. Once the image is built, you can run a container based on it using the following command:bashCopy codedocker run -d -p 8080:80 --name climate-controller-app climate-controller-api\n    \n    - `-d`: Runs the container in detached mode (in the background).\n        \n    - `-p 8080:80`: Maps port 8080 on your host machine to port 80 in the container.\n        \n    - `--name climate-controller-app`: Assigns the name `climate-controller-app` to the container for easier management.\n        \n4. The API should now be accessible at `http://localhost:8080`.Example endpoint: `http://localhost:8080/api/climate/status`You can use any HTTP client or a browser to interact with the API.\n    \n\n  \n  \n\n---\n\n## 2\\. Endpoints\n\n### Update Climate Data\n\nThis endpoint allows you to update climate data in the database.\n\n- **URL:** `/api/climate/update`\n    \n- **Method:** `POST`\n    \n- **Request Body:**\n    \n    - `ClimateModel` (object): The climate data to be updated.\n        \n\n#### Example Request:\n\n``` json\nPOST /api/climate/update\n{\n    \"Timestamp\": \"2023-11-09T14:30:00\",\n    \"Temperature\": 25.5,\n    \"Humidity\": 60.2\n}\n\n ```\n\n#### Example Response:\n\n``` json\n200 OK\n\n ```\n\n### Get Climate Status\n\nThis endpoint allows you to retrieve the latest climate status.\n\n- **URL:** `/api/climate/status`\n    \n- **Method:** `GET`\n    \n\n#### Example Request:\n\n```\nGET /api/climate/status\n\n ```\n\n#### Example Response (Success):\n\n``` json\n{\n    \"Timestamp\": \"2023-11-09T14:30:00\",\n    \"Temperature\": 25.5,\n    \"Humidity\": 60.2,\n    \"Status\": \"Normal\"\n}\n\n ```\n\n#### Example Response (Climate Data Not Found):\n\n``` json\n404 Not Found\n\"Climate data not found.\"\n\n ```\n\n### Get Historical Climate Data\n\nThis endpoint allows you to retrieve historical climate data within a specified date range.\n\n- **URL:** `/api/climate/history`\n    \n- **Method:** `GET`\n    \n- **Query Parameters:**\n    \n    - `start_date` (string): The start date of the historical data range (format: \"yyyy-MM-ddTHH:mm:ss\").\n        \n    - `end_date` (string): The end date of the historical data range (format: \"yyyy-MM-ddTHH:mm:ss\").\n        \n\n#### Example Request:\n\n```\nGET /api/climate/history?start_date=2023-11-01T00:00:00&end_date=2023-11-02T23:59:59\n\n ```\n\n#### Example Response (Success):\n\n``` json\n[\n    {\n        \"Timestamp\": \"2023-11-01T12:00:00\",\n        \"Temperature\": 24.3,\n        \"Humidity\": 58.8\n    },\n    {\n        \"Timestamp\": \"2023-11-02T08:30:00\",\n        \"Temperature\": 23.8,\n        \"Humidity\": 59.5\n    },\n    ...\n]\n\n ```\n\n---\n\n## 3\\. Usage Examples\n\n### Updating Climate Data\n\nTo update climate data, send a `POST` request to `/api/climate/update` with the required parameters in the request body.\n\n### Getting Climate Status\n\nTo retrieve the latest climate status, send a `GET` request to `/api/climate/status`.\n\n### Fetching Historical Climate Data\n\nTo fetch historical climate data, send a `GET` request to `/api/climate/history` with the `start_date` and `end_date` parameters in the query string.\n\n---\n\n---\n\n# Climate Controller API Documentation\n\n## Introduction\n\nThe Climate Controller API is a web service designed to provide climate-related information. It includes endpoints to retrieve the status of climate conditions and sensor data.\n\n## Table of Contents\n\n1. [Installation and Setup](#installation-and-setup)\n    \n2. [Endpoints](#endpoints)\n    \n    - [Get Climate Status](#get-climate-status)\n        \n    - [Get Sensor Status](#get-sensor-status)\n        \n3. [Usage Examples](#usage-examples)\n    \n\n---\n\n## 1\\. Installation and Setup\n\n1. Ensure that you have a Dockerfile in your project directory. If you don't have one, create a file named `Dockerfile` (no file extension) with the following content:# Use an appropriate base image with ASP.NET Core runtimeFROM mcr.microsoft.com/dotnet/aspnet:5.0 AS baseWORKDIR /appEXPOSE 80# Use an appropriate base image with ASP.NET Core SDKFROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildWORKDIR /srcCOPY \\[\"YourProjectName/YourProjectName.csproj\", \"YourProjectName/\"\\]RUN dotnet restore \"YourProjectName/YourProjectName.csproj\"COPY . .WORKDIR \"/src/YourProjectName\"RUN dotnet build \"YourProjectName.csproj\" -c Release -o /app/buildFROM build AS publishRUN dotnet publish \"YourProjectName.csproj\" -c Release -o /app/publishFROM base AS finalWORKDIR /appCOPY --from=publish /app/publish .ENTRYPOINT \\[\"dotnet\", \"YourProjectName.dll\"\\]Replace `YourProjectName` with the actual name of your project.\n    \n2. Open a terminal and navigate to the directory containing the Dockerfile and your project files. Then, run the following command to build the Docker image:docker build -t climate-controller-api .This command builds a Docker image named `climate-controller-api`.\n    \n3. Once the image is built, you can run a container based on it using the following command:docker run -d -p 8080:80 --name climate-controller-app climate-controller-api\n    \n    - `-d`: Runs the container in detached mode (in the background).\n        \n    - `-p 8080:80`: Maps port 8080 on your host machine to port 80 in the container.\n        \n    - `--name climate-controller-app`: Assigns the name `climate-controller-app` to the container for easier management.\n        \n4. The API should now be accessible at `http://localhost:8080`.Example endpoint: `http://localhost:8080/api/climate/status`You can use any HTTP client or a browser to interact with the API.\n    \n\n---\n\n## 2\\. Endpoints\n\n### Get Climate Status\n\nThis endpoint provides information about the current climate status, including temperature, humidity, and timestamp.\n\n- **URL:** `/api/climate/status`\n    \n- **Method:** `GET`\n    \n\n#### Example Request:\n\n```\nGET /api/climate/status\n\n ```\n\n#### Example Response:\n\n``` json\n{\n    \"timestamp\": \"2023-11-09T14:30:00.1234567Z\",\n    \"temperature\": 25.8,\n    \"humidity\": 65.2,\n    \"Status\": \"Normal\"\n}\n\n ```\n\n### Get Sensor Status\n\nThis endpoint provides information about a simulated sensor's status, including sensor ID, timestamp, status, and battery level.\n\n- **URL:** `/api/climate/sensors/status`\n    \n- **Method:** `GET`\n    \n\n#### Example Request:\n\n```\nGET /api/climate/sensors/status\n\n ```\n\n#### Example Response:\n\n``` json\n{\n    \"sensor_id\": \"12345\",\n    \"timestamp\": \"2023-11-09T14:30:00.1234567Z\",\n    \"status\": \"Operational\",\n    \"battery_level\": 85\n}\n\n ```\n\n---\n\n## 3\\. Usage Examples\n\n### Getting Climate Status\n\nTo retrieve the current climate status, send a `GET` request to `/api/climate/status`.\n\n### Getting Sensor Status\n\nTo retrieve the status of a simulated sensor, send a `GET` request to `/api/climate/sensors/status`.\n\n---",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27189946"
+	},
+	"item": [
+		{
+			"name": "https://localhost:7277/api/Climate/sensors/status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7277/api/Climate/sensors/status",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7277",
+					"path": [
+						"api",
+						"Climate",
+						"sensors",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:7277/api/Climate/cilmate/status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7277/api/Climate/sensors/status",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7277",
+					"path": [
+						"api",
+						"Climate",
+						"sensors",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:7278/api/Climate/update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 0,\r\n  \"timestamp\": \"2023-11-09T10:55:48.058Z\",\r\n  \"temperature\": 0,\r\n  \"humidity\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7278/api/Climate/update",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7278",
+					"path": [
+						"api",
+						"Climate",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:7278/api/Climate/status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7278/api/Climate/status",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7278",
+					"path": [
+						"api",
+						"Climate",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:7278/api/Climate/history?start_date=01.01.2000&end_date=09.11.2023",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7278/api/Climate/history?start_date=2000-01-01T00:00:00&end_date=2023-11-09T23:59:59\n",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7278",
+					"path": [
+						"api",
+						"Climate",
+						"history"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2000-01-01T00:00:00"
+						},
+						{
+							"key": "end_date",
+							"value": "2023-11-09T23:59:59\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/sensors/update?PIN=106-901-048",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<div style=\"font-family: Arial, sans-serif; padding: 10px;\">\r",
+							"    <h3 style=\"color: #FF0000;\">ConnectionError</h3>\r",
+							"    <div style=\"padding: 10px;\">\r",
+							"        <p class=\"errormsg\" style=\"font-size: 16px;\">redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. No connection could be made because the target machine actively refused it.</p>\r",
+							"    </div>\r",
+							"    <h4 style=\"color: #0000FF;\">Traceback (most recent call last)</h4>\r",
+							"    <div style=\"padding: 10px;\">\r",
+							"        <h4 style=\"color: #000000;\">File \"C:\\Users\\Анна\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\redis\\connection.py\", line 264, in connect</h4>\r",
+							"        <pre style=\"font-size: 14px;\">    sock = self.retry.call_with_retry(\r",
+							"        ...\r",
+							"        ...\r",
+							"        ...\r",
+							"        </pre>\r",
+							"    </div>\r",
+							"</div>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    var res = pm.response.text();\r",
+							"\r",
+							"    return { response: res };\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sensor_id\": \"12345\",\r\n    \"timestamp\": \"2023-09-15T10:30:00\",\r\n    \"status\": \"Operational\",\r\n    \"battery_level\": 80,\r\n    \"alert_message\": \"Optional alert message\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/sensors/update?PIN=106-901-048",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"sensors",
+						"update"
+					],
+					"query": [
+						{
+							"key": "PIN",
+							"value": "106-901-048"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/sensors/status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/sensors/status",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"sensors",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/api/status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/status",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
