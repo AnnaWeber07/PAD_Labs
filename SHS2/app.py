@@ -1,6 +1,8 @@
 import pyodbc
 from flask import Flask, request, jsonify
 from datetime import datetime
+from cachetools import cached, LRUCache
+import hashlib
 
 app = Flask(__name__)
 
@@ -17,35 +19,41 @@ def add_cors_headers(response):
 CONNECTION_STRING = 'DRIVER={SQL Server};Server=DESKTOP-ENEG12R;Database=SHS;Integrated Security=SSPI;'
 conn = pyodbc.connect(CONNECTION_STRING)
 
+# Cache setup with Consistent Hashing
+cache = LRUCache(maxsize=128)  # You can adjust the cache size as needed
+
+# Helper function for generating cache key
+def generate_cache_key(*args, **kwargs):
+    key = hashlib.md5(str(args).encode('utf-8') + str(kwargs).encode('utf-8')).hexdigest()
+    return key
+
+
 @app.route('/api/sensors/update', methods=['POST'])
 def update_sensor_data():
-    data = request.get_json()
-    sensor_id = data['sensor_id']
-    timestamp_str = data['timestamp']
-    status = data['status']
-    battery_level = data['battery_level']
-    alert_message = data.get('alert_message')
+        data = request.get_json()
+        sensor_id = data['sensor_id']
+        timestamp_str = data['timestamp']
+        status = data['status']
+        battery_level = data['battery_level']
+        alert_message = data.get('alert_message')
 
-    # Use dateutil.parser to parse the timestamp string
-    timestamp = datetime.fromisoformat(timestamp_str)
+        # Use dateutil.parser to parse the timestamp string
+        timestamp = datetime.fromisoformat(timestamp_str)
 
-    # Insert data into the database
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO sensor_data (sensor_id, timestamp, status, battery_level, alert_message)
-        VALUES (?, ?, ?, ?, ?)
-    ''', sensor_id, timestamp, status, battery_level, alert_message)
+        # Insert data into the database
+        cursor = conn.cursor()
+        cursor.execute ( '''
+            INSERT INTO sensor_data (sensor_id, timestamp, status, battery_level, alert_message)
+            VALUES (?, ?, ?, ?, ?)
+        ''', sensor_id, timestamp, status, battery_level, alert_message)
 
-    conn.commit()
-    cursor.close()
+        conn.commit()
+        cursor.close()
 
-    return jsonify(message='Sensor data updated successfully'), 200
-
-@app.route('/api/sensors/status', methods=['GET'])
-def get_sensor_status():
-    sensor_id = request.args.get('sensor_id')
-
-    # Retrieve data from the database
+        return jsonify(message='Sensor data updated successfully'), 200
+# Decorator for caching with consistent hashing
+@cached(cache, key=generate_cache_key)
+def query_database_and_return_data(sensor_id):
     cursor = conn.cursor()
     cursor.execute('SELECT TOP 1 * FROM sensor_data WHERE sensor_id = ? ORDER BY timestamp DESC', sensor_id)
     row = cursor.fetchone()
@@ -59,9 +67,23 @@ def get_sensor_status():
             'battery_level': row.battery_level,
             'alert_message': row.alert_message
         }
-        return jsonify(response_data), 200
+        return response_data
+    else:
+        return None
+
+@app.route('/api/sensors/status', methods=['GET'])
+def get_sensor_status():
+    sensor_id = request.args.get('sensor_id')
+
+    # Use the cached function to query the database
+    result = query_database_and_return_data(sensor_id)
+
+    if result:
+        return jsonify(result), 200
     else:
         return jsonify(message='Sensor data not found'), 404
+
+
 
 @app.route('/api/status', methods=['GET'])
 def service_status():

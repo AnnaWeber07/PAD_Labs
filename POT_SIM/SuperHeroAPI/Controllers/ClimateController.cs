@@ -17,41 +17,60 @@ namespace Controllers
             _cache = cache;
         }
 
-        [HttpGet("/climate/status")]
-        public IActionResult GetClimateStatus()
+        [HttpGet("/combined/status")]
+        public IActionResult GetCombinedStatus()
+        {
+            try
+            {
+                // Generate climate data
+                var climateData = GenerateClimateData();
+
+                // Generate sensor data
+                var sensorData = GenerateSensorData();
+
+                var combinedData = new
+                {
+                    ClimateData = climateData,
+                    SensorData = sensorData
+                };
+
+                return Ok(combinedData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error: {ex.Message}");
+            }
+        }
+
+        private object GenerateClimateData()
         {
             var timestamp = DateTime.UtcNow;
-            var temperature = GenerateRandomDouble(20, 30); // Generate random temperature (between 20 and 30)
-            var humidity = GenerateRandomDouble(50, 70); // Generate random humidity (between 50 and 70)
+            var temperature = GenerateRandomDouble(20, 30);
+            var humidity = GenerateRandomDouble(50, 70);
 
-            var status = new
+            return new
             {
                 timestamp,
                 temperature,
                 humidity,
                 Status = "Normal"
             };
-
-            return Ok(status);
         }
 
-        [HttpGet("sensors/status")]
-        public IActionResult GetSensorStatus()
+        private object GenerateSensorData()
         {
-            var sensorId = "12345"; // Simulated sensor ID
+            var sensorId = "12345";
             var timestamp = DateTime.UtcNow;
-            var statusOptions = new[] { "Operational", "Needs Maintenance" }; // Simulated status options
-            var batteryLevel = GenerateRandomInt(70, 100); // Generate random battery level (between 70 and 100)
+            var statusOptions = new[] { "Operational", "Needs Maintenance" };
+            var batteryLevel = GenerateRandomInt(70, 100);
 
-            var status = new
+            return new
             {
                 sensor_id = sensorId,
                 timestamp,
                 status = statusOptions[GenerateRandomInt(0, statusOptions.Length)],
                 battery_level = batteryLevel
             };
-
-            return Ok(status);
         }
 
         private double GenerateRandomDouble(double min, double max)
