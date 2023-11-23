@@ -268,6 +268,58 @@ Here's a short overview of data management and endpoints that are to be implemen
 
 These REST API endpoints provide specific fields for each service, making it clear what data can be sent or retrieved in JSON format. They cover climate control and sensor health operations, including updates, status retrieval, historical data, and alerts.
 
+**Architecture Schema**
+![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/0d6f33df-f2a0-43c3-bda2-5321a2a06b90)
+
+With cache cluster:
+![image](https://github.com/AnnaWeber07/PAD_Labs/assets/78998404/6b45af71-3e67-4345-b1c4-134f6bf49865)
+
+
+To implement the architectural changes for lab 2, I will need to perform the following steps:
+
+1. **Trip Circuit Breaker**:
+   - Integrate a Circuit Breaker library into microservices. Configure it to monitor outgoing requests and open the circuit if multiple errors occur.
+   - Define fallback mechanisms for when the circuit is open to gracefully handle failures.
+
+2. **Service High Availability**:
+   - Deploy multiple instances of each microservice behind a load balancer to ensure high availability. Use container orchestration tools like Kubernetes for container management and scaling.
+
+3. **Logging with ELK Stack or Prometheus + Grafana**:
+   - Set up an ELK (Elasticsearch, Logstash, Kibana) stack or Prometheus + Grafana for monitoring and logging.
+   - Configure your microservices to send logs to either Elasticsearch or Prometheus using logging libraries or agents.
+
+4. **Aggregate Data from ALL Services**:
+   - Create a separate microservice or component responsible for aggregating data from all services.
+   - Implement an API endpoint in the aggregator service that fetches data from individual microservices and combines it.
+
+5. **Microservice-based 2 Phase Commits**:
+   - Implement a coordinator service responsible for coordinating transactions across multiple databases.
+   - Define a protocol for two-phase commit and have the coordinator interact with the microservices to ensure atomic transactions.
+
+6. **Consistent Hashing for Cache**:
+   - Use a consistent hashing algorithm (e.g., Ketama) to distribute cache data across multiple cache nodes. This ensures that cached data remains available even if nodes fail.
+
+7. **Cache High Availability**:
+   - Deploy multiple cache nodes and use a cache clustering or replication mechanism (e.g., Redis Cluster) to ensure availability even if some nodes fail.
+
+8. **Long-running Saga Transactions with Coordinator**:
+   - Implement a Saga Orchestrator pattern to manage long-running transactions across microservices.
+   - Define a saga for your specific business process, and use a coordinator to handle the sequence of steps and compensating transactions.
+
+9. **Database Redundancy/Replication + Failover**:
+   - Choose a database that supports replication (e.g., PostgreSQL with streaming replication).
+   - Set up a primary database and configure multiple replicas for redundancy. Implement automatic failover mechanisms.
+
+10. **Data Warehouse with ETL**:
+    - Create a separate ETL (Extract, Transform, Load) service or job.
+    - Define ETL processes to periodically extract data from your databases, transform it to fit the data warehouse schema, and load it into the data warehouse.
+
+11. **Deploy and Orchestrate**:
+    - Dockerize all components, including microservices, databases, cache nodes, orchestrators, and ETL services.
+    - Use a container orchestration platform like Kubernetes to manage deployment, scaling, and orchestration.
+
+Remember to thoroughly test each component and the interactions between them to ensure the entire architecture functions as expected. Additionally, consider implementing monitoring, alerting, and recovery procedures for each component to handle potential failures in a production environment.
+
 ## Deployment & Scaling:
 
 By implementing Docker containerization and Kubernetes orchestration, we ensure consistent, reliable, and scalable deployment of microservices. This approach allows us to manage resources efficiently, automatically scale services as needed, and maintain high availability for the Distributed Data Management System for Climate Control Devices.
